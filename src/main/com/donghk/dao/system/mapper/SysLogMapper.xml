@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.donghk.dao.system.SysLogMapper">
+
+	<resultMap id="SysLogMap" type="SysLog">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="LOG_TYPE" jdbcType="VARCHAR" property="logType" />
+		<result column="LOG_DETAIL" jdbcType="VARCHAR" property="logDetail" />
+		<result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+		<result column="CREATE_USER_NAME" jdbcType="VARCHAR" property="createUserName" />
+		<result column="CREATE_DATE" jdbcType="TIMESTAMP" property="createDate" />
+	</resultMap>
+	
+	<!-- 按条件查询日志 start -->
+	<select id="getAll" parameterType="map" resultMap="SysLogMap">
+		SELECT 
+			*
+  		FROM 
+  			T_SYS_LOG
+ 		WHERE 
+ 			1 = 1
+	 		<if test="search.logType != null and search.logType != '' ">
+				AND LOG_TYPE LIKE CONCAT('%',#{search.logType,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="search.logDetail != null and search.logDetail != '' ">
+				AND LOG_DETAIL LIKE CONCAT('%',#{search.logDetail,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="search.createUserName != null and search.createUserName != '' ">
+				AND CREATE_USER_NAME LIKE CONCAT('%',#{search.createUserName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="search.createDate != null and search.createDate!= '' ">
+				AND DATE_FORMAT(CREATE_DATE,'%Y-%m-%d') = #{search.createDate, jdbcType = DATE}
+			</if>
+		<if test="sidx!=null and sord!=null">
+			ORDER BY ${sidx} ${sord}
+		</if>
+		<if test="sidx==null and sord==null">
+			ORDER BY CREATE_DATE DESC
+		</if>
+	</select>
+	<!-- 按条件查询日志 end -->
+	
+	<!-- 插入日志记录 start -->
+	<insert id="insert" parameterType="SysLog">
+		INSERT INTO T_SYS_LOG
+		  (ID,
+		   LOG_TYPE,
+		   LOG_DETAIL,
+		   IS_VALID,
+		   IS_DEL,
+		   CREATE_USER_ID,
+		   CREATE_USER_NAME,
+		   CREATE_DATE)
+		VALUES
+		  (
+		   UUID(), 
+		   #{logType, jdbcType = VARCHAR},
+		   #{logDetail, jdbcType = VARCHAR},
+		   #{isValid, jdbcType = INTEGER},
+		   #{isDel, jdbcType = INTEGER},
+		   #{createUserId, jdbcType = VARCHAR},
+		   #{createUserName, jdbcType = VARCHAR},
+		   #{createDate, jdbcType = TIMESTAMP})
+	</insert>
+	<!-- 插入日志记录 end -->
+
+</mapper>

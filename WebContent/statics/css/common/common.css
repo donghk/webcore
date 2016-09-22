@@ -1,0 +1,47 @@
+/* 居右 */
+.float-right {
+	float: right;
+}
+
+/* 居右 */
+.float-left {
+	float: left;
+}
+
+/* 去除内边距 */
+.no-padding {
+	padding: 0;
+}
+
+/* select框用 */
+.padding-4 {
+	padding: 4px;
+}
+
+/* jqgrid固定列table替换bootstrap默认的背景透明 */
+#grid-table_frozen {
+	background-color: #fff;
+}
+
+/* jqgrid固定列标题高度设置 */
+.frozen-div {
+	height: 42px !important;
+}
+
+/* 提示框距离顶部 */
+.gritter-top-25 {
+	top: 25px;
+}
+
+/* 取消鼠标选中下划线 */
+.no-text-line {
+	text-decoration: none;
+}
+
+/* textarea框高度 */
+.textarea-high {
+	height: 110px;
+	overflow-x: visible;
+	overflow-y: visible;
+	padding: 4px;
+}

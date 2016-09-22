@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.donghk.dao.cache.CacheMapper">
+
+	<!-- 数据字典 start -->
+	<resultMap id="SysDictMap" type="SysDict">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="DICT_NAME" jdbcType="VARCHAR" property="dictName" />
+		<result column="DICT_CODE" jdbcType="VARCHAR" property="dictCode" />
+		<result column="DICT_LEVEL" jdbcType="VARCHAR" property="dictLevel" />
+		<result column="DICT_ORDER" jdbcType="VARCHAR" property="dictOrder" />
+		<result column="PARENT_ID" jdbcType="VARCHAR" property="parentId" />
+	</resultMap>
+	<!-- 数据字典 end -->
+	
+    <!-- 获取所有URL对应的权限 start -->
+	<select id="getAllUrlAuthRel" resultType="map">
+		SELECT
+			M.ID						AS 		RESOURCEID,
+			M.MENU_PATH					AS		URL
+		FROM
+			T_SYS_MENU M
+		WHERE 
+			M.IS_VALID = 1
+		 	AND M.IS_DEL = 0
+		 	AND M.MENU_PATH IS NOT NULL
+	</select>
+	<!-- 获取所有URL对应的权限 end -->
+	
+	<!-- 获取所有的数据字典 start -->
+	<select id="getDataDictAll" resultMap="SysDictMap" >
+	SELECT 
+		*
+	FROM 
+	  	T_SYS_DICT
+	WHERE 
+	 	IS_VALID = 1
+	 	AND IS_DEL = 0
+	</select>
+	<!-- 获取所有的数据字典 end -->
+	
+</mapper>

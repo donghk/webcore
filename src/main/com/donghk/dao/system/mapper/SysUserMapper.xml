@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.donghk.dao.system.SysUserMapper">
+
+	<resultMap id="SysUserMap" type="SysUser">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+		<result column="PASSWD" jdbcType="VARCHAR" property="passwd" />
+		<result column="REAL_NAME" jdbcType="VARCHAR" property="realName" />
+		<result column="REMARK" jdbcType="VARCHAR" property="remark" />
+		<result column="IS_VALID" jdbcType="INTEGER" property="isValid" />
+		<result column="CREATE_USER_ID" jdbcType="VARCHAR" property="createUserId" />
+		<result column="CREATE_USER_NAME" jdbcType="VARCHAR" property="createUserName" />
+		<result column="CREATE_DATE" jdbcType="TIMESTAMP" property="createDate" />
+	</resultMap>
+	
+	<!-- 按条件查询用户 start -->
+	<select id="getAll" parameterType="map" resultMap="SysUserMap">
+		SELECT 
+			*
+  		FROM 
+  			T_SYS_USER
+ 		WHERE 
+ 			IS_DEL = 0
+ 			<if test="search.userName != null and search.userName != '' ">
+				AND USER_NAME LIKE CONCAT('%',#{search.userName, jdbcType = VARCHAR}, '%')
+			</if>
+			<if test="search.realName != null and search.realName != '' ">
+				AND REAL_NAME LIKE CONCAT('%',#{search.realName, jdbcType = VARCHAR}, '%')
+			</if>
+			<if test="search.remark != null and search.remark != '' ">
+				AND REMARK LIKE CONCAT('%',#{search.remark, jdbcType = VARCHAR}, '%')
+			</if>
+			<if test="search.isValid != null and search.isValid != '' ">
+				AND IS_VALID = #{search.isValid, jdbcType = VARCHAR}
+			</if>
+			<if test="search.createUserName != null and search.createUserName != '' ">
+				AND CREATE_USER_NAME LIKE CONCAT('%',#{search.createUserName, jdbcType = VARCHAR}, '%')
+			</if>
+			<if test="search.createDate!= null and search.createDate != '' ">
+				AND DATE_FORMAT(CREATE_DATE, '%Y-%m-%d') = #{search.createDate, jdbcType = DATE}
+			</if>
+		<if test="sidx!=null and sord!=null">
+			ORDER BY ${sidx} ${sord}
+		</if>
+		<if test="sidx==null and sord==null">
+			ORDER BY CREATE_DATE DESC
+		</if>
+	</select>
+	<!-- 按条件查询用户 end -->
+	
+	<!-- 根据用户ID获取用户信息 start -->
+	<select id="get" parameterType="java.lang.String" resultMap="SysUserMap">
+		SELECT 
+			*
+  		FROM 
+  			T_SYS_USER
+ 		WHERE 
+			ID = #{_parameter, jdbcType = VARCHAR}
+	</select>
+	<!-- 根据用户ID获取用户信息 end -->
+	
+	<!-- 新增用户信息 start -->
+	<insert id="insert" parameterType="SysUser">
+		INSERT INTO
+			T_SYS_USER
+		(
+			ID,
+			USER_NAME,
+			PASSWD,
+			REAL_NAME,
+			REMARK,
+			CREATE_USER_ID,
+			CREATE_USER_NAME,
+			CREATE_DATE
+		)
+			VALUES
+		(
+			UUID(),
+			#{userName, jdbcType = VARCHAR},
+			#{passwd, jdbcType = VARCHAR},
+			#{realName, jdbcType = VARCHAR},
+			#{remark, jdbcType = VARCHAR},
+			#{createUserId, jdbcType = VARCHAR},
+			#{createUserName, jdbcType = VARCHAR},
+			#{createDate, jdbcType = TIMESTAMP}
+		)
+	</insert>
+	<!-- 新增用户信息 start -->
+	
+	<!-- 根据用户ID更新用户信息start -->
+	<update id="update" parameterType="SysUser">
+		UPDATE
+			T_SYS_USER
+		SET
+			USER_NAME = #{userName, jdbcType = VARCHAR},
+			PASSWD = #{passwd, jdbcType = VARCHAR},
+			REAL_NAME = #{realName, jdbcType = VARCHAR},
+			REMARK = #{remark, jdbcType = VARCHAR},
+			IS_VALID = #{isValid, jdbcType = INTEGER},
+			UPDATE_USER_ID = #{updateUserId, jdbcType = VARCHAR},
+			UPDATE_USER_NAME = #{updateUserName, jdbcType = VARCHAR},
+			UPDATE_DATE = #{updateDate, jdbcType = TIMESTAMP}
+		WHERE
+			ID = #{id, jdbcType = VARCHAR} 
+	</update>
+	<!-- 根据用户ID更新用户信息 end -->
+	
+	<!-- 删除用户 start -->
+	<update id="delete" parameterType="map">
+		UPDATE
+			T_SYS_USER
+		SET
+			IS_DEL = 1,
+			UPDATE_USER_ID = #{updateUserId, jdbcType = VARCHAR},
+			UPDATE_USER_NAME = #{updateUserName, jdbcType = VARCHAR},
+			UPDATE_DATE = #{updateDate, jdbcType = TIMESTAMP}
+		WHERE
+			ID IN
+			<foreach collection="ids" item="item" open="(" close=")" separator=",">
+		    	#{item, jdbcType = VARCHAR}  
+		    </foreach>
+	</update>
+	<!-- 删除用户 end -->
+	
+	<!-- 根据用户名称获取用户信息 start -->
+	<select id="getUserByUserName" parameterType="map" resultMap="SysUserMap">
+		SELECT
+			*
+		FROM
+			T_SYS_USER
+		WHERE
+			USER_NAME = #{userName, jdbcType = VARCHAR}
+			AND ID != #{id, jdbcType = VARCHAR}
+			AND IS_DEL = 0
+	</select>
+	<!-- 根据用户名称获取用户信息 end -->
+
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.donghk.dao.common.LoginMapper">
+
+	<!-- 根据用户姓名获取用户信息 start -->
+	<select id="getUserByUserName" parameterType="java.lang.String" resultType="SysUser">
+		SELECT 
+			ID					AS			id,
+			USER_NAME			AS			userName,
+			PASSWD				AS			passwd,
+			REAL_NAME			AS			realName
+  		FROM 
+  			T_SYS_USER 
+ 		WHERE 
+ 			IS_VALID = 1
+ 			AND IS_DEL = 0
+ 			AND USER_NAME = #{_parameter, jdbcType = VARCHAR}
+	</select>
+	<!-- 根据用户姓名获取用户信息 end -->
+	
+	<!-- 获取用户的角色信息 start -->
+	<select id="getRoleByUserId" parameterType="java.lang.String" resultType="SysRole">
+		SELECT
+			R.ID				AS		id,
+			R.ROLE_NAME			AS		roleName,
+			R.ROLE_CODE			AS		roleCode
+		FROM
+			T_SYS_ROLE R,
+			T_SYS_USER_ROLE_REL UR
+		WHERE
+			R.ID = UR.ROLE_ID
+			AND R.IS_VALID = 1
+ 			AND R.IS_DEL = 0
+			AND UR.USER_ID = #{_parameter, jdbcType = VARCHAR}
+	</select>
+	<!-- 获取用户的角色信息 end -->
+	
+	<!-- 获取用户菜单权限 start -->
+	<select id="getMenuByUserIdRole" parameterType="map" resultType="SysMenu">
+		SELECT
+			ID							AS			id,
+			PARENT_ID					AS			parentId,
+			MENU_NAME					AS			menuName,
+			MENU_PATH					AS			menuPath,
+			MENU_ICON					AS			menuIcon,
+			MENU_ORDER					AS			menuOrder
+		FROM
+			T_SYS_MENU M,
+			T_SYS_ROLE_MENU_REL RM
+		WHERE 
+			M.ID = RM.MENU_ID
+		AND M.IS_VALID = 1
+	 	AND M.IS_DEL = 0
+		AND RM.ROLE_ID IN
+			<foreach collection="roleList" item="item" open="(" close=")"
+				separator=",">
+				#{item.id, jdbcType = VARCHAR}
+			</foreach>
+		ORDER BY M.MENU_ORDER
+	</select>
+	<!-- 获取用户菜单权限 end -->
+	
+	<!--  获取用户上级菜单权限 start -->
+	<select id="getParentMenuByUserIdRole" parameterType="map" resultType="SysMenu">
+		SELECT
+			ID							AS			id,
+			PARENT_ID					AS			parentId,
+			MENU_NAME					AS			menuName,
+			MENU_PATH					AS			menuPath,
+			MENU_ICON					AS			menuIcon,
+			MENU_ORDER					AS			menuOrder
+		FROM
+			T_SYS_MENU M,
+			T_SYS_ROLE_MENU_REL RM
+		WHERE 
+			M.ID = RM.MENU_ID
+		AND M.IS_VALID = 1
+	 	AND M.IS_DEL = 0
+	 	AND M.PARENT_ID IS NULL
+		AND RM.ROLE_ID IN
+			<foreach collection="roleList" item="item" open="(" close=")"
+				separator=",">
+				#{item.id, jdbcType = VARCHAR}
+			</foreach>
+		ORDER BY M.MENU_ORDER
+	</select>
+	<!-- 获取用户上级菜单权限 end -->
+	
+	<!-- 获取用户按钮权限 start -->
+	<select id="getButtonByUserIdRole" parameterType="map" resultType="SysButton">
+		SELECT
+			B.ID							AS			id,
+			B.BUTTON_NAME					AS			buttonName,
+			B.BUTTON_CODE					AS			buttonCode
+		FROM
+			T_SYS_BUTTON B,
+			T_SYS_ROLE_BUTTON_REL RB
+		WHERE 
+			B.ID = RB.BUTTON_ID
+		AND B.IS_VALID = 1
+	 	AND B.IS_DEL = 0
+		AND RB.ROLE_ID IN
+			<foreach collection="roleList" item="item" open="(" close=")"
+				separator=",">
+				#{item.id, jdbcType = VARCHAR}
+			</foreach>
+	</select>
+	<!-- 获取用户按钮权限 end -->
+
+</mapper>
